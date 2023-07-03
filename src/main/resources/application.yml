@@ -1,0 +1,12 @@
+# DataSource Config
+spring:
+  application:
+    name: mySecrity
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://124.221.95.33:3306/school?useSSL=false&serverTimezone=UTC
+    username: root
+    password: qazwsxedc
+
+mybatis-plus:
+  type-aliases-package: com.xjh.security_demo.mapper
