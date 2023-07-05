@@ -1,10 +1,12 @@
 package com.xjh.security_demo.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/js/**","/css/**","/images/**");
     }
 
-    @Override
+    /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests().anyRequest()
                 .authenticated()
@@ -56,10 +58,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //注意:需禁用crsf防护功能,否则登录不成功
                 .csrf()
                 .disable();
+    }*/
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+        //关闭csrf
+                .csrf().disable()
+                // 不通iSession获取SecurityContext
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                // 对于登录接口 运行匿名访问
+                .antMatchers("/user/login").anonymous()
+                // 除上面的所有请求全部需要鉴权认证
+                .anyRequest().authenticated();
     }
 
     @Bean
     public PasswordEncoder password(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
