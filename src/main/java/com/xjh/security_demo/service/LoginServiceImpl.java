@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -39,9 +40,20 @@ public class LoginServiceImpl implements LoginService {
         String id = loginUser.getUser().getId();
         Map<String, Object> map = new HashMap<>();
         map.put("id",id);
-        String token = JWTUtil.createToken(map, "userid".getBytes());
+        map.put("name",loginUser.getUser().getName());
+        String token = JWTUtil.createToken(map, "userInfo".getBytes());
         // 将token缓存进redis
-        redisUtil.set("login:",token,3600);
+        redisUtil.set("login:"+id,token,3600);
         return token;
+    }
+
+    @Override
+    public void logout() {
+        // 获取SecurityContextHolder中的用户id
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User)authentication.getPrincipal();
+        String userId = principal.getId();
+        // 删除redis中的值
+        redisUtil.del("login:" + userId);
     }
 }

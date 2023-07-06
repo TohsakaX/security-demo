@@ -21,8 +21,19 @@ public class LoginController {
     public ResultVo<String> login(@RequestBody User user){
         // 登录
         try {
-            loginService.login(user);
-            return ResultVo.ok();
+            return ResultVo.ok(loginService.login(user));
+        }catch (Exception e){
+            log.error(e.toString());
+            return ResultVo.err(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/logout")
+    public ResultVo<String> logout(){
+        // 注销
+        try {
+            loginService.logout();
+            return ResultVo.ok("注销成功！");
         }catch (Exception e){
             log.error(e.toString());
             return ResultVo.err(e.getMessage());
