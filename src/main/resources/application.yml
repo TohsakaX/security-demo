@@ -8,5 +8,19 @@ spring:
     username: root
     password: qazwsxedc
 
+  redis:
+    host: 124.221.95.33
+    port: 6379
+    ssl: false
+    database: 0
+    password: jh159258369
+    timeout: 20000
+    lettuce:
+      pool:
+        # 最大空闲连接数
+        maxIdle: 3
+        # 最大活动连接数
+        maxActive: 20
+
 mybatis-plus:
   type-aliases-package: com.xjh.security_demo.mapper
