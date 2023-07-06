@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.xjh.security_demo.entity.LoginUser;
 import com.xjh.security_demo.entity.User;
+import com.xjh.security_demo.utils.RedisUtil;
 import com.xjh.security_demo.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public String login(User user) {
@@ -36,6 +40,8 @@ public class LoginServiceImpl implements LoginService {
         Map<String, Object> map = new HashMap<>();
         map.put("id",id);
         String token = JWTUtil.createToken(map, "userid".getBytes());
+        // 将token缓存进redis
+        redisUtil.set("login:",token,3600);
         return token;
     }
 }
