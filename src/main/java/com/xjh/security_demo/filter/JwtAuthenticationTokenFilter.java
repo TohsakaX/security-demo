@@ -34,6 +34,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private RedisUtil redisUtil;
 
+    /**
+     * Title: doFilterInternal
+     * @author XJH
+     * @description token认证过滤
+     * @createTime  2023/7/8
+     * @param
+     * @return void
+     * @version V1.0
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 获取token

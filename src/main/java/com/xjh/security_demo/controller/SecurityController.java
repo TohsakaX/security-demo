@@ -10,4 +10,9 @@ public class SecurityController {
     public String hello(){
         return "hello xjh";
     }
+
+    @GetMapping("/vip")
+    public String index(){
+        return "welcome vip !";
+    }
 }
