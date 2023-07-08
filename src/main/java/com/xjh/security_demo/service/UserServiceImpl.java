@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
@@ -35,6 +38,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user == null){
             throw new RuntimeException("账号或密码错误！");
         }
-        return new LoginUser(user);
+        // TODO 查询对应的权限
+        /*List<String> list = menuMapper.selectPermsByUserId(user.getId());*/
+        List<String> list = new ArrayList<>();
+        return new LoginUser(user,list);
     }
 }
