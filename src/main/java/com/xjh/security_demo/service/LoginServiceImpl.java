@@ -2,11 +2,12 @@ package com.xjh.security_demo.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.jwt.JWTUtil;
+import com.alibaba.fastjson.JSON;
 import com.xjh.security_demo.entity.LoginUser;
 import com.xjh.security_demo.entity.User;
 import com.xjh.security_demo.utils.RedisUtil;
-import com.xjh.security_demo.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -24,6 +26,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public String login(User user) {
@@ -43,9 +48,10 @@ public class LoginServiceImpl implements LoginService {
         map.put("name",loginUser.getUser().getName());
         String token = JWTUtil.createToken(map, "userInfo".getBytes());
         // 权限信息
-        map.put("authorities",loginUser.getAuthorities());
+        map.put("authorities", loginUser.getPermissions());
         // 将用户信息缓存进redis
-        redisUtil.set("login:"+id,map,3600);
+        /*redisUtil.set("login:"+id,JSON.toJSONString(map),3600);*/
+        stringRedisTemplate.opsForValue().set("login:"+id,JSON.toJSONString(map),3600, TimeUnit.SECONDS);
         return token;
     }
 

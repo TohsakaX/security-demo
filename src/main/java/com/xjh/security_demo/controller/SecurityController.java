@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityController {
 
     @GetMapping("hello")
-    @PreAuthorize("hasAuthority('admin:hello')")
+    /*@PreAuthorize("hasAuthority('admin:hell')")*/
     public String hello(){
         return "hello xjh";
     }
 
     @GetMapping("/vip")
+    @PreAuthorize("hasAuthority('admin:vip')")
     public String index(){
         return "welcome vip !";
     }

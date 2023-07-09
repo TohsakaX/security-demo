@@ -5,12 +5,13 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+
 import com.xjh.security_demo.entity.LoginUser;
 import com.xjh.security_demo.entity.User;
 import com.xjh.security_demo.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * Title: doFilterInternal
@@ -70,7 +74,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         user.setName(name);
         // 从redis中获取用户信息
         String userKey = "login:" + userId;
-        String userInfo = redisUtil.get(userKey);
+        /*String userInfo = redisUtil.get(userKey);*/
+        String userInfo = stringRedisTemplate.opsForValue().get(userKey);
         com.alibaba.fastjson.JSONObject userMap = JSON.parseObject(userInfo);
         if(userMap == null){
             log.error("登录过期！");
