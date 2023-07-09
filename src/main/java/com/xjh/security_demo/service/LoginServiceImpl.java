@@ -42,8 +42,10 @@ public class LoginServiceImpl implements LoginService {
         map.put("id",id);
         map.put("name",loginUser.getUser().getName());
         String token = JWTUtil.createToken(map, "userInfo".getBytes());
-        // 将token缓存进redis
-        redisUtil.set("login:"+id,token,3600);
+        // 权限信息
+        map.put("authorities",loginUser.getAuthorities());
+        // 将用户信息缓存进redis
+        redisUtil.set("login:"+id,map,3600);
         return token;
     }
 

@@ -4,6 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.xjh.security_demo.entity.LoginUser;
 import com.xjh.security_demo.entity.User;
 import com.xjh.security_demo.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Title: JwtAuthenticationTokenFilter
@@ -66,14 +70,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         user.setName(name);
         // 从redis中获取用户信息
         String userKey = "login:" + userId;
-        String tokenCache = redisUtil.get(userKey);
-        if(StrUtil.isBlank(tokenCache)){
+        String userInfo = redisUtil.get(userKey);
+        com.alibaba.fastjson.JSONObject userMap = JSON.parseObject(userInfo);
+        if(userMap == null){
             log.error("登录过期！");
             throw new RuntimeException("登录过期！");
         }
+        List<String> authorities = userMap.getJSONArray("authorities")!=null ? userMap.getJSONArray("authorities").toJavaList(String.class) : null;
+
+        LoginUser loginUser = new LoginUser(user,authorities);
         // 存入SecurityContextHolder
         // TODO 获取权限信息封装到Authentication中
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,null,null);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,null,loginUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // filterChain.doFilter(request,response) 放行
         filterChain.doFilter(request,response);
