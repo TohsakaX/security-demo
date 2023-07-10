@@ -45,7 +45,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     /**
      * Title: doFilterInternal
      * @author XJH
-     * @description token认证过滤
+     * @description token认证过滤,并且将用户信息和权限信息封装到Authentication中
      * @createTime  2023/7/8
      * @param
      * @return void

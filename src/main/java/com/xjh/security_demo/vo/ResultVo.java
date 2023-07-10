@@ -26,4 +26,8 @@ public class ResultVo<T> {
     public static  <T> ResultVo<T> err(String errMsg){
         return new ResultVo<>(-1, errMsg , null);
     }
+
+    public static  <T> ResultVo<T> err(int code, String errMsg){
+        return new ResultVo<>(code, errMsg , null);
+    }
 }
